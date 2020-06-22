@@ -1,0 +1,129 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: EC2 boxes for docker swarm
+Parameters:
+  NetworkStack:
+    Type: String
+Resources:
+  EC2A:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ImageId: ami-032598fcc7e9d1c7a
+        SecurityGroupId: !GetAtt SecurityGroup.GroupId
+        SubnetId: !Sub ${NetworkStack}-PublicSubnetA
+        KeyName: LondonKeyPair
+      TemplateURL: https://ronanmoriarty-cloudformation-templates.s3.eu-west-2.amazonaws.com/docker/docker-swarm-EC2.yml
+  EC2B:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ImageId: ami-032598fcc7e9d1c7a
+        SecurityGroupId: !GetAtt SecurityGroup.GroupId
+        SubnetId: !Sub ${NetworkStack}-PublicSubnetB
+        KeyName: LondonKeyPair
+      TemplateURL: https://ronanmoriarty-cloudformation-templates.s3.eu-west-2.amazonaws.com/docker/docker-swarm-EC2.yml
+  EC2C:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ImageId: ami-032598fcc7e9d1c7a
+        SecurityGroupId: !GetAtt SecurityGroup.GroupId
+        SubnetId: !Sub ${NetworkStack}-PublicSubnetC
+        KeyName: LondonKeyPair
+      TemplateURL: https://ronanmoriarty-cloudformation-templates.s3.eu-west-2.amazonaws.com/docker/docker-swarm-EC2.yml
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security group for EC2 boxes"
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${NetworkStack}-VPC"
+  DockerSwarmGroupIngressA:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      CidrIp: 86.4.85.195/32
+      FromPort: 2377
+      ToPort: 2377
+      IpProtocol: tcp
+  DockerSwarmGroupIngressB:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      SourceSecurityGroupId: !GetAtt SecurityGroup.GroupId
+      FromPort: 2377
+      ToPort: 2377
+      IpProtocol: tcp
+  DockerSwarmGroupIngressC:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      CidrIp: 0.0.0.0/0
+      FromPort: 80
+      ToPort: 80
+      IpProtocol: tcp
+  DockerSwarmGroupIngressD:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      CidrIp: 0.0.0.0/0
+      FromPort: 8080
+      ToPort: 8080
+      IpProtocol: tcp
+  DockerSwarmGroupIngressE:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      CidrIp: 86.4.85.195/32
+      FromPort: 22
+      ToPort: 22
+      IpProtocol: tcp
+  DockerSwarmGroupIngressF:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      SourceSecurityGroupId: !GetAtt SecurityGroup.GroupId
+      FromPort: 7946
+      ToPort: 7946
+      IpProtocol: udp
+  DockerSwarmGroupIngressG:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      CidrIp: 0.0.0.0/0
+      FromPort: 5000
+      ToPort: 5000
+      IpProtocol: tcp
+  DockerSwarmGroupIngressH:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      SourceSecurityGroupId: !GetAtt SecurityGroup.GroupId
+      FromPort: 7946
+      ToPort: 7946
+      IpProtocol: tcp
+  DockerSwarmGroupIngressI:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      SourceSecurityGroupId: !GetAtt SecurityGroup.GroupId
+      FromPort: -1
+      ToPort: -1
+      IpProtocol: 50 # ESP - see http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
+  DockerSwarmGroupIngressJ:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      SourceSecurityGroupId: !GetAtt SecurityGroup.GroupId
+      FromPort: 4789
+      ToPort: 4789
+      IpProtocol: udp
+  DockerSwarmGroupIngressK:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup
+      CidrIp: 86.4.85.195/32
+      FromPort: 5001
+      ToPort: 5001
+      IpProtocol: tcp
+
