@@ -1,9 +1,7 @@
-# create your drupal and postgres config here, based off the last assignment
-version: '2'
+version: '3.1'
 services:
   web:
-    build: .
-    image: custom-drupal
+    image: drupal:8.2
     ports:
       - '8080:80'
     volumes:
@@ -14,12 +12,20 @@ services:
   db:
     image: postgres:12.1
     environment:
-      - POSTGRES_PASSWORD=MyPassword
+      - POSTGRES_PASSWORD_FILE=/run/secrets/psql-pw
     volumes:
       - drupal-data:/var/lib/postgresql/data
+    secrets:
+      - psql-pw
 volumes:
   drupal-data:
   drupal-modules:
   drupal-profiles:
   drupal-sites:
   drupal-themes:
+secrets:
+  psql-pw:
+    external: true
+
+# echo "my-password" | docker secret create psql-pw -
+# docker stack deploy -c docker-compose.yml drupal
